@@ -60,8 +60,14 @@ var MTX [][]int              // may as well make global
 var MaxSpoke Spoke           // the top spoke in the wheels
 var MPrevTest map[string]int // keeps track of prev tested combinations so they can be skipped.
 
+func (s *Spoke) SIndex() string {
+	// returns the unique index for the Spoke
+
+	return "this is the unique index"
+}
+
 func main() {
-	//MPrevTest = make(map[string]int) // Declaired Globally, but still must be initialized
+	MPrevTest = make(map[string]int) // Declaired Globally, but still must be initialized
 
 	MaxSpoke := Stage000Begin(grid)
 
@@ -69,10 +75,7 @@ func main() {
 	fmt.Println(" MaxSpoke is:", MaxSpoke)
 }
 
-//===========================================================================
-//===========================================================================
 func Stage000Begin(gr string) Spoke {
-	//  this is to make the functions more testable.
 
 	// Step 1 - Create MTX[][]int grid
 	MTX = Step001_MakeMTXGrid(gr) //works
@@ -80,13 +83,11 @@ func Stage000Begin(gr string) Spoke {
 
 	for r := 0; r < len(MTX); r++ {
 		for c := 0; c < len(MTX[r]); c++ {
-
-			//  build a []spokes from central spoke point
-			resultSpokes = Step002_BuildSpokes(r, c)
+			resultSpokes = Step002_GetMaxSpoke(r, c)
 			for _, aaa := range resultSpokes {
 
 				//fmt.Println("+++++++++++++", aaa.SIndex())
-
+				
 				prevIndex := getPrevIndex2(aaa.a03, aaa.dir) // will return row,col of mirror val
 
 				if isAlreadyTested2(prevIndex) {
@@ -117,8 +118,7 @@ func Stage000Begin(gr string) Spoke {
 //===============================================================================
 //===============================================================================
 func Step001_MakeMTXGrid(gr string) [][]int {
-	//  converts the [][]String into [][]int
-	//  assumes no dec points ( floats )
+	//m1 := strings.Split(grid, "\n")
 	m1 := strings.Split(gr, "\n")
 	MTX := make([][]int, len(m1))
 	for r := 0; r < len(m1); r++ {
@@ -134,8 +134,50 @@ func Step001_MakeMTXGrid(gr string) [][]int {
 //===============================================================================
 //===============================================================================
 
-func Step002_BuildSpokes(r, c int) []Spoke {
-	// returns []Spoke
+func addPrevTested(index string) {
+	// just adding randomly "2"...  It means nothing.
+	//fmt.Println("====   MPrevTested adding - ", index)
+	MPrevTest[index] = 2
+}
+
+func isAlreadyTested2(pt string) bool {
+	_, ok := MPrevTest[pt]
+	return ok
+}
+
+//=====================
+func getPrevIndex2(aaa arr, dir int) string {
+	z0 := strconv.Itoa(aaa.row)
+	z1 := strconv.Itoa(aaa.col)
+	z2 := "0"
+
+	switch dir {
+	case 1:
+		z2 = strconv.Itoa(5)
+	case 2:
+		z2 = strconv.Itoa(6)
+	case 3:
+		z2 = strconv.Itoa(7)
+	case 4:
+		z2 = strconv.Itoa(8)
+	case 5:
+		z2 = strconv.Itoa(1)
+	case 6:
+		z2 = strconv.Itoa(2)
+	case 7:
+		z2 = strconv.Itoa(3)
+	case 8:
+		z2 = strconv.Itoa(4)
+	}
+
+	zz := fmt.Sprintf("%s-%s-%s", z0, z1, z2)
+
+	return zz
+}
+
+//===============================================================================
+
+func Step002_GetMaxSpoke(r, c int) []Spoke {
 
 	//fmt.Println("----   Step002  ---", r, "- ", c)
 	var a0 arr
@@ -259,46 +301,4 @@ func GetUpperInBounds(aa arr) bool {
 		return false
 	}
 
-}
-
-//===============================================================================
-//===============================================================================
-func getPrevIndex2(aaa arr, dir int) string {
-	z0 := strconv.Itoa(aaa.row)
-	z1 := strconv.Itoa(aaa.col)
-	z2 := "0"
-
-	switch dir {
-	case 1:
-		z2 = strconv.Itoa(5)
-	case 2:
-		z2 = strconv.Itoa(6)
-	case 3:
-		z2 = strconv.Itoa(7)
-	case 4:
-		z2 = strconv.Itoa(8)
-	case 5:
-		z2 = strconv.Itoa(1)
-	case 6:
-		z2 = strconv.Itoa(2)
-	case 7:
-		z2 = strconv.Itoa(3)
-	case 8:
-		z2 = strconv.Itoa(4)
-	}
-
-	zz := fmt.Sprintf("%s-%s-%s", z0, z1, z2)
-
-	return zz
-}
-
-func addPrevTested(index string) {
-	// just adding randomly "2"...  It means nothing.
-	//fmt.Println("====   MPrevTested adding - ", index)
-	MPrevTest[index] = 2
-}
-
-func isAlreadyTested2(pt string) bool {
-	_, ok := MPrevTest[pt]
-	return ok
 }
